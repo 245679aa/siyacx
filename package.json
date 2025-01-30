@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "axios": "^1.2.0",
-    "next": "13.0.0",  // 确保使用与你项目兼容的 Next.js 版本
+    "next": "13.0.0",  
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
@@ -20,7 +20,7 @@
     "eslint-config-next": "^13.0.0"
   },
   "engines": {
-    "node": ">=16.8.0"  // 确保 Node.js 版本兼容
+    "node": ">=16.8.0" 
   },
   "license": "MIT"
 }
