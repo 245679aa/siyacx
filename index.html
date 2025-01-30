@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>登录</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+    }
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 16px;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    pre {
+      background-color: #f4f4f4;
+      padding: 10px;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>登录</h1>
+  <form id="loginForm">
+    <div>
+      <label for="username">用户名：</label>
+      <input type="email" id="username" name="username" required>
+    </div>
+    <div>
+      <label for="password">密码：</label>
+      <input type="password" id="password" name="password" required>
+    </div>
+    <button type="submit">提交</button>
+  </form>
+
+  <div id="responseContainer">
+    <h2>响应结果：</h2>
+    <pre id="responseData"></pre>
+  </div>
+
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', async function (event) {
+      event.preventDefault();
+
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+
+      // 创建请求数据
+      const data = { username, password };
+
+      try {
+        // 发起 POST 请求到 API 路由
+        const response = await fetch('/api/signIn', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        });
+
+        // 解析 API 返回的 JSON 数据
+        const result = await response.json();
+
+        // 将响应数据显示在页面上
+        document.getElementById('responseContainer').style.display = 'block';
+        document.getElementById('responseData').textContent = JSON.stringify(result, null, 2);
+      } catch (error) {
+        document.getElementById('responseContainer').style.display = 'block';
+        document.getElementById('responseData').textContent = '请求失败: ' + error.message;
+      }
+    });
+  </script>
+</body>
+</html>
