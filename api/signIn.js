@@ -81,11 +81,22 @@ export default function handler(req, res) {
             });
 
             homepageResponse.on('end', () => {
-              res.status(200).json({
-                success: true,
-                message: '获取用户主页数据成功',
-                data: JSON.parse(homepageDataReceived)
-              });
+              const homepageResult = JSON.parse(homepageDataReceived);
+
+              // 检查Token是否过期
+              if (homepageResult.code === 'JWT001') {
+                console.log('Token 错误或过期，重新登录');
+                res.status(400).json({
+                  success: false,
+                  message: 'Token 错误或过期，重新登录'
+                });
+              } else {
+                res.status(200).json({
+                  success: true,
+                  message: '获取用户主页数据成功',
+                  data: homepageResult
+                });
+              }
             });
           });
 
