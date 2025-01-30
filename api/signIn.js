@@ -47,6 +47,11 @@ export default function handler(req, res) {
           const jwtToken = parsedData.data.jwtToken;
           const username = parsedData.data.username;
 
+          // 调试输出jwtToken和username
+          console.log('登录成功！');
+          console.log('jwtToken:', jwtToken);  // 输出jwtToken
+          console.log('username:', username);  // 输出username
+
           // 获取用户主页数据
           const homepageData = JSON.stringify({
             optimization: 1,
