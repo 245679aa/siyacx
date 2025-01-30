@@ -41,7 +41,22 @@ export default function handler(req, res) {
 
       // The whole response has been received.
       response.on('end', () => {
-        res.status(200).json(JSON.parse(data));
+        const parsedData = JSON.parse(data);
+
+        if (parsedData.success && parsedData.data.jwtToken) {
+          // 登录成功，返回jwtToken
+          res.status(200).json({
+            success: true,
+            jwtToken: parsedData.data.jwtToken,
+            message: '登录成功'
+          });
+        } else {
+          // 登录失败
+          res.status(400).json({
+            success: false,
+            message: '登录失败，请检查用户名和密码'
+          });
+        }
       });
     });
 
@@ -54,6 +69,7 @@ export default function handler(req, res) {
     request.write(postData);
     request.end();
   } else {
+    // 如果请求方法不是 POST，返回 405 Method Not Allowed
     res.status(405).json({ error: 'Method Not Allowed' });
   }
 }
