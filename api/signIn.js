@@ -44,12 +44,52 @@ export default function handler(req, res) {
         const parsedData = JSON.parse(data);
 
         if (parsedData.success && parsedData.data.jwtToken) {
-          // 登录成功，返回jwtToken
-          res.status(200).json({
-            success: true,
-            jwtToken: parsedData.data.jwtToken,
-            message: '登录成功'
+          const jwtToken = parsedData.data.jwtToken;
+          const username = parsedData.data.username;
+
+          // 获取用户主页数据
+          const homepageData = JSON.stringify({
+            optimization: 1,
+            username: username
           });
+
+          const homepageOptions = {
+            hostname: 'api.siya.ai',
+            port: 443,
+            path: '/siya/user/homepage',
+            method: 'POST',
+            headers: {
+              'User-Agent': 'okhttp/4.9.0',
+              'Connection': 'close',
+              'Accept-Encoding': 'gzip',
+              'Authorization': jwtToken,  // 使用登录后的jwtToken
+              'X-Exchange-Info': 'version=1.2.91&source=android&appname=siya&language=zh-TW&timeZone=Asia/Shanghai&platform=company',
+              'Content-Type': 'application/json; charset=UTF-8'
+            }
+          };
+
+          const homepageRequest = https.request(homepageOptions, (homepageResponse) => {
+            let homepageDataReceived = '';
+
+            homepageResponse.on('data', (chunk) => {
+              homepageDataReceived += chunk;
+            });
+
+            homepageResponse.on('end', () => {
+              res.status(200).json({
+                success: true,
+                message: '获取用户主页数据成功',
+                data: JSON.parse(homepageDataReceived)
+              });
+            });
+          });
+
+          homepageRequest.on('error', (error) => {
+            res.status(500).json({ error: '请求主页数据失败', details: error.message });
+          });
+
+          homepageRequest.write(homepageData);
+          homepageRequest.end();
         } else {
           // 登录失败
           res.status(400).json({
@@ -69,7 +109,6 @@ export default function handler(req, res) {
     request.write(postData);
     request.end();
   } else {
-    // 如果请求方法不是 POST，返回 405 Method Not Allowed
     res.status(405).json({ error: 'Method Not Allowed' });
   }
 }
