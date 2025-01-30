@@ -52,78 +52,7 @@ export default function handler(req, res) {
           console.log('jwtToken:', jwtToken);  // 输出jwtToken
           console.log('username:', username);  // 输出username
 
-          // 获取用户主页数据
-          const homepageData = JSON.stringify({
-            optimization: 1,
-            username: username
-          });
-
-          const homepageOptions = {
-            hostname: 'api.siya.ai',
-            port: 443,
-            path: '/siya/user/homepage',
-            method: 'POST',
-            headers: {
-              'User-Agent': 'okhttp/4.9.0',
-              'Connection': 'close',
-              'Accept-Encoding': 'gzip',
-              'Authorization': jwtToken,  // 使用登录后的jwtToken
-              'X-Exchange-Info': 'version=1.2.91&source=android&appname=siya&language=zh-TW&timeZone=Asia/Shanghai&platform=company',
-              'Content-Type': 'application/json; charset=UTF-8'
-            }
-          };
-
-          const homepageRequest = https.request(homepageOptions, (homepageResponse) => {
-            let homepageDataReceived = '';
-
-            homepageResponse.on('data', (chunk) => {
-              homepageDataReceived += chunk;
-            });
-
-            homepageResponse.on('end', () => {
-              const homepageResult = JSON.parse(homepageDataReceived);
-
-              // 检查Token是否过期
-              if (homepageResult.code === 'JWT001') {
-                console.log('Token 错误或过期，重新登录');
-                res.status(400).json({
-                  success: false,
-                  message: 'Token 错误或过期，重新登录'
-                });
-              } else {
-                res.status(200).json({
-                  success: true,
-                  message: '获取用户主页数据成功',
-                  data: homepageResult
-                });
-              }
-            });
-          });
-
-          homepageRequest.on('error', (error) => {
-            res.status(500).json({ error: '请求主页数据失败', details: error.message });
-          });
-
-          homepageRequest.write(homepageData);
-          homepageRequest.end();
-        } else {
-          // 登录失败
-          res.status(400).json({
-            success: false,
-            message: '登录失败，请检查用户名和密码'
-          });
-        }
-      });
-    });
-
-    // Handle request errors
-    request.on('error', (error) => {
-      res.status(500).json({ error: '请求失败', details: error.message });
-    });
-
-    // Send the request body
-    request.write(postData);
-    request.end();
+        
   } else {
     res.status(405).json({ error: 'Method Not Allowed' });
   }
