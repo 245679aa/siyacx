@@ -1,16 +1,26 @@
 {
-  "name": "md5-encrypt",
+  "name": "my-nextjs-project",
   "version": "1.0.0",
-  "description": "MD5 encryption and save to Supabase",
+  "description": "A Next.js project to handle user sign-in with external API",
+  "main": "index.js",
   "scripts": {
-    "start": "vercel start"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.0.0",
-    "crypto-js": ">=4.2.0"
+    "axios": "^1.2.0",
+    "next": "13.0.0",  // 确保使用与你项目兼容的 Next.js 版本
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.0.0",
+    "eslint-config-next": "^13.0.0"
   },
   "engines": {
-    "node": "22.x"
+    "node": ">=16.8.0"  // 确保 Node.js 版本兼容
   },
   "license": "MIT"
 }
