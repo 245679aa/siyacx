@@ -1,0 +1,16 @@
+{
+  "name": "md5-encrypt",
+  "version": "1.0.0",
+  "description": "MD5 encryption and save to Supabase",
+  "scripts": {
+    "start": "vercel start"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.0.0",
+    "crypto-js": ">=4.2.0"
+  },
+  "engines": {
+    "node": "22.x"
+  },
+  "license": "MIT"
+}
