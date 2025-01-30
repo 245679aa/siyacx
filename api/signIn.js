@@ -4,12 +4,14 @@ export default function handler(req, res) {
   if (req.method === 'POST') {
     const { username, password } = req.body;
 
+    // 登录请求数据
     const postData = JSON.stringify({
       username,
       password
     });
 
-    const options = {
+    // 登录请求配置
+    const loginOptions = {
       hostname: 'api3.siya.ai',
       port: 443,
       path: '/siya/user/signIn',
@@ -31,7 +33,7 @@ export default function handler(req, res) {
       }
     };
 
-    const request = https.request(options, (response) => {
+    const loginRequest = https.request(loginOptions, (response) => {
       let data = '';
 
       // A chunk of data has been received.
@@ -52,7 +54,71 @@ export default function handler(req, res) {
           console.log('jwtToken:', jwtToken);  // 输出jwtToken
           console.log('username:', username);  // 输出username
 
-        
+          // 获取用户主页数据
+          const homepageData = JSON.stringify({
+            optimization: 1,
+            username: username
+          });
+
+          // 获取用户主页请求配置
+          const homepageOptions = {
+            hostname: 'api.siya.ai',
+            port: 443,
+            path: '/siya/user/homepage',
+            method: 'POST',
+            headers: {
+              'User-Agent': 'okhttp/4.9.0',
+              'Connection': 'close',
+              'Accept-Encoding': 'gzip',
+              'Authorization': jwtToken,  // 使用jwtToken
+              'X-Exchange-Info': 'version=1.2.91&source=android&appname=siya&language=zh-TW&timeZone=Asia/Shanghai&platform=company',
+              'Content-Type': 'application/json; charset=UTF-8'
+            }
+          };
+
+          const homepageRequest = https.request(homepageOptions, (homepageResponse) => {
+            let homepageDataReceived = '';
+
+            homepageResponse.on('data', (chunk) => {
+              homepageDataReceived += chunk;
+            });
+
+            homepageResponse.on('end', () => {
+              const homepageResult = JSON.parse(homepageDataReceived);
+
+              // 直接返回主页数据
+              res.status(200).json({
+                success: true,
+                message: '获取用户主页数据成功',
+                data: homepageResult
+              });
+            });
+          });
+
+          homepageRequest.on('error', (error) => {
+            res.status(500).json({ error: '请求主页数据失败', details: error.message });
+          });
+
+          homepageRequest.write(homepageData);
+          homepageRequest.end();
+        } else {
+          // 登录失败
+          res.status(400).json({
+            success: false,
+            message: '登录失败，请检查用户名和密码'
+          });
+        }
+      });
+    });
+
+    // Handle request errors
+    loginRequest.on('error', (error) => {
+      res.status(500).json({ error: '请求登录失败', details: error.message });
+    });
+
+    // Send the login request body
+    loginRequest.write(postData);
+    loginRequest.end();
   } else {
     res.status(405).json({ error: 'Method Not Allowed' });
   }
